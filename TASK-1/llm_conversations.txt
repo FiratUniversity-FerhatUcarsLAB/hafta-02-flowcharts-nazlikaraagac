@@ -1,0 +1,168 @@
+birinci sınıf yazılım mühendisliği öğrencisi olarak algoritmayı mükemmel bir şekilde ve ince ayrıntısına kadar kavramaya çalışıyorum. şu an yapmam gereken şey  atm para çekme algoritmasını en harika ve hiçbir detayı atlamadan yazmak; pseudocodeunu oluşturmak. bana bu konuda en iyi şekilde yardımcı olacağını ve en güzel sonuçları vereceğine eminim. PIN doğrulama (3 hak), bakiye kontrolü tutar 
+kontrolü (20 TL katları), günlük limit kontrolü bu adımları kesinlikle içermesi gerekiyor ama.
+ChatGPT:
+
+Tamamdır kankam, ATM para çekme algoritmasını en ince ayrıntısına kadar yazalım. Senin istediğin gibi PIN doğrulama (3 hak), bakiye kontrolü, tutar kontrolü (20 TL katları), günlük limit kontrolü adımlarını eksiksiz işleyeceğiz. Burada asıl amaç gerçek bir ATM’nin mantığını kavramak. O yüzden pseudocode’u temiz, anlaşılır ve hatasız kuracağız.
+
+ATM PARA ÇEKME ALGORİTMASI (Pseudocode)
+ALGORITMA ATM_PARA_CEKME
+
+    KART_TAK()
+    EGER KART_GEÇERSİZ İSE
+        MESAJ("Geçersiz kart. Lütfen bankanızla iletişime geçin.")
+        KART_IADESI()
+        BITIR
+    SON
+
+    PIN_DENEME_HAKKI ← 3
+    DOGRU_PIN ← FALSE
+
+    TEKRAR PIN_GIR
+        PIN ← KULLANICIDAN_PIN_AL()
+        EGER PIN_DOGRU(PIN) ISE
+            DOGRU_PIN ← TRUE
+            CIK
+        DEGILSE
+            PIN_DENEME_HAKKI ← PIN_DENEME_HAKKI - 1
+            MESAJ("Hatalı PIN. Kalan deneme hakkı: " + PIN_DENEME_HAKKI)
+        SON
+    PIN_DENEME_HAKKI > 0 IKEN
+
+    EGER DOGRU_PIN = FALSE ISE
+        MESAJ("Kartınız bloke oldu. Bankanızla iletişime geçin.")
+        KART_IADESI()
+        BITIR
+    SON
+
+    GUNLUK_LIMIT ← 5000
+    BUGUN_CEKILEN ← SISTEMDEN_AL("bugün çekilen tutar")
+    BAKIYE ← HESAPTAN_BAKIYE_AL()
+
+    MESAJ("Çekmek istediğiniz tutarı giriniz (20 TL katlarında).")
+    TUTAR ← KULLANICIDAN_TUTAR_AL()
+
+    EGER TUTAR % 20 ≠ 0 ISE
+        MESAJ("Tutar yalnızca 20 TL'nin katları olabilir.")
+        KART_IADESI()
+        BITIR
+    SON
+
+    EGER TUTAR > BAKIYE ISE
+        MESAJ("Yetersiz bakiye.")
+        KART_IADESI()
+        BITIR
+    SON
+
+    EGER (BUGUN_CEKILEN + TUTAR) > GUNLUK_LIMIT ISE
+        MESAJ("Günlük para çekme limitinizi aşıyorsunuz.")
+        KART_IADESI()
+        BITIR
+    SON
+
+    // Tüm kontrolleri geçtiyse
+    BAKIYE ← BAKIYE - TUTAR
+    BUGUN_CEKILEN ← BUGUN_CEKILEN + TUTAR
+    SISTEME_YAZ("yeni bakiye", BAKIYE)
+    SISTEME_YAZ("bugün çekilen tutar", BUGUN_CEKILEN)
+
+    PARA_VER(TUTAR)
+    MESAJ("İşleminiz başarıyla gerçekleşti. Yeni bakiyeniz: " + BAKIYE)
+
+    KART_IADESI()
+    BITIR
+
+SON_ALGORITMA
+
+Buradaki kritik noktalar:
+
+PIN doğrulama: Kullanıcıya 3 hak veriliyor. Doğru girmezse kart bloke.
+
+Tutar kontrolü: % operatörü ile sadece 20’nin katı olmasına izin verdik.
+
+Bakiye kontrolü: Kullanıcı hesabındaki bakiye yetmezse işlem iptal.
+
+Günlük limit kontrolü: Daha önce çekilen tutarla birlikte toplamı günlük limiti aşıyorsa izin verilmez.
+
+Başarılı işlem sonrası: Hem bakiye hem günlük çekilen tutar sistemde güncelleniyor.
+
+Bunu gerçek hayattaki ATM mantığına birebir benzettim. İstersen bundan sonraki adımda sana bu pseudocode’un flowchart (akış diyagramı) versiyonunu da çizebilirim ya da dot diliyle Graphviz şemasına çevirebilirim.
+
+İstediğin çıktı formatı ne olsun: flowchart mı, dot dili mi, yoksa pdf halinde düzgün bir ödev çıktısı mı?
+
+Şunu dedin:
+harika teşekkür ederim. bunu dot diline de çevirelim.
+ChatGPT:
+
+Süper, şimdi yazdığımız ATM para çekme pseudocode’unu sana Graphviz DOT diline çevirelim. Böylece algoritmayı akış diyagramı şeklinde görselleştirebilirsin.
+
+Aşağıdaki kodu .dot uzantılı bir dosyaya kaydedip dot -Tpng atm.dot -o atm.png komutu ile çalıştırırsan diyagramın görselini elde edersin.
+
+DOT Kodu (Graphviz)
+digraph ATM_PARA_CEKME {
+    rankdir=TB;
+    node [shape=rectangle, style=rounded, fontname="Arial"];
+
+    START [label="KART TAK"];
+    INVALID_CARD [label="Kart Geçersiz?"];
+    EXIT1 [label="Geçersiz kart\nKart iade\nBitir", shape=diamond, style=filled, fillcolor=lightcoral];
+    
+    PIN_LOOP [label="PIN Gir"];
+    CHECK_PIN [label="PIN Doğru?"];
+    WRONG_PIN [label="Hatalı PIN\nHak -1"];
+    BLOCK [label="Hak = 0\nKart Bloke\nBitir", shape=diamond, style=filled, fillcolor=lightcoral];
+    
+    AMOUNT_INPUT [label="Çekilecek Tutarı Gir"];
+    CHECK_MULTIPLE [label="Tutar 20'nin katı mı?"];
+    INVALID_AMOUNT [label="Geçersiz Tutar\nKart iade\nBitir", shape=diamond, style=filled, fillcolor=lightcoral];
+    
+    CHECK_BALANCE [label="Tutar > Bakiye?"];
+    INSUFFICIENT [label="Yetersiz Bakiye\nKart iade\nBitir", shape=diamond, style=filled, fillcolor=lightcoral];
+    
+    CHECK_LIMIT [label="Tutar + Bugün Çekilen > Günlük Limit?"];
+    LIMIT_EXCEEDED [label="Limit Aşıldı\nKart iade\nBitir", shape=diamond, style=filled, fillcolor=lightcoral];
+    
+    SUCCESS [label="Bakiye Güncelle\nGünlük Çekilen Güncelle\nPara Ver"];
+    END [label="Kart iade\nBitir", shape=oval, style=filled, fillcolor=lightblue];
+
+    // Bağlantılar
+    START -> INVALID_CARD;
+    INVALID_CARD -> EXIT1 [label="Evet"];
+    INVALID_CARD -> PIN_LOOP [label="Hayır"];
+
+    PIN_LOOP -> CHECK_PIN;
+    CHECK_PIN -> AMOUNT_INPUT [label="Evet"];
+    CHECK_PIN -> WRONG_PIN [label="Hayır"];
+    WRONG_PIN -> PIN_LOOP;
+    WRONG_PIN -> BLOCK [label="Hak=0"];
+
+    AMOUNT_INPUT -> CHECK_MULTIPLE;
+    CHECK_MULTIPLE -> INVALID_AMOUNT [label="Hayır"];
+    CHECK_MULTIPLE -> CHECK_BALANCE [label="Evet"];
+
+    CHECK_BALANCE -> INSUFFICIENT [label="Evet"];
+    CHECK_BALANCE -> CHECK_LIMIT [label="Hayır"];
+
+    CHECK_LIMIT -> LIMIT_EXCEEDED [label="Evet"];
+    CHECK_LIMIT -> SUCCESS [label="Hayır"];
+
+    SUCCESS -> END;
+}
+
+
+Bu diyagramda:
+
+Hatalı veya reddedilen durumlarda kırmızımsı elmas (diamond) ile sonlandırma gösteriliyor.
+
+Başarılı işlem mavi oval ile bitiyor.
+
+Döngü kısmı (PIN deneme hakkı) de ayrıca işlenmiş durumda.
+
+İstersen bunu pdf olarak hazır çıkartılabilir hale de getirebilirim ya da sana direkt flowchart görselini oluşturabilirim. Görselini ister misin?
+
+Şunu dedin:
+hayır ama bu sistemin açıklamasını 5 6 satır olacak şekilde yapar mısın
+ChatGPT:
+
+Tabii kankam, işte 5–6 satırlık kısa ve öz açıklaması:
+
+ATM para çekme sistemi, kart doğrulama ile başlar; geçersiz kartlar reddedilir. Ardından kullanıcıya 3 kez PIN girme hakkı tanınır, yanlış girilirse kart bloke edilir. Doğru PIN sonrası kullanıcı çekmek istediği tutarı girer ve bu tutarın 20 TL katı olup olmadığı kontrol edilir. Tutar geçerli ise önce bakiye yeterliliği, sonra günlük limit aşımı denetlenir. Tüm kontroller olumluysa bakiye ve günlük çekilen tutar güncellenir, para verilir ve işlem kart iadesiyle sonlandırılır.
