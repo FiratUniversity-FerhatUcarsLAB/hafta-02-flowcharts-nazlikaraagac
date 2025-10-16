@@ -1,0 +1,164 @@
+şunu dedin:
+üniversite ders kayıt sisteminin genel akışını açıklayıp algoritmasını yazmanı istiyorum. giriş, ders listesi, ders seçimi, kontroller, onaylama bölümlerimi içersin. ayrıca ders kaydında yapılması gereken kontrolleri listele: ön koşul, kontenjan, zaman çakışması, kredi limiti, danışman onayı. ayrıca eğer ise gibi yapıları kullanarak pseudocodeunu yazmayı kesinlikle unutma.
+
+ChatGPT:
+Tamam Nazlı, senin seviyene göre bunu hem detaylı hem de anlaşılır şekilde yapalım. Bir üniversite ders kayıt sistemi genel olarak şu adımlardan oluşur:
+
+Genel Akış
+
+Giriş: Öğrenci sisteme kullanıcı adı ve şifresi ile giriş yapar. Giriş doğrulaması yapılır.
+
+Ders Listesi: Sisteme giriş yapan öğrenciye kayıt yapabileceği dersler listelenir.
+
+Ders Seçimi: Öğrenci dersleri seçer veya seçimlerini değiştirir.
+
+Kontroller: Her ders için sistem aşağıdaki kontrolleri yapar:
+
+Ön Koşul (Prerequisite): Dersin ön koşulunu almış mı?
+
+Kontenjan (Capacity): Dersin kontenjanı dolmuş mu?
+
+Zaman Çakışması (Time Conflict): Seçilen derslerin saatleri çakışıyor mu?
+
+Kredi Limiti (Credit Limit): Toplam kredi limiti aşılmış mı?
+
+Danışman Onayı (Advisor Approval): Bazı dersler danışman onayı gerektiriyorsa onay var mı?
+
+Onaylama: Tüm kontroller geçerse ders kaydı onaylanır ve sistemde kaydedilir.
+
+Hata Mesajları: Eğer herhangi bir kontrol başarısız olursa öğrenci bilgilendirilir ve seçimi düzeltmesi istenir.
+
+Pseudocode
+ALGORITMA DERS_KAYIT_SISTEMI
+
+GIRIS:
+    KULLANICI_ADI ← input("Kullanıcı Adı: ")
+    SIFRE ← input("Şifre: ")
+    EGER GIRIS_BASARILI(KULLANICI_ADI, SIFRE) == FALSE ISE
+        MESAJ("Giriş başarısız! Kullanıcı adı veya şifre hatalı.")
+        BITIR
+    SON
+
+DERS_LISTESI ← GETIR_SECILEBILIR_DERSLER(KULLANICI_ADI)
+GOSTER(DERS_LISTESI)
+
+DERS_SECIMI:
+    SECILEN_DERSLER ← input("Seçmek istediğiniz dersleri girin: ")
+
+KONTROLLER:
+    TOPLAM_KREDI ← 0
+    HATA_VARSAY <- FALSE
+
+    HER DERS IN SECILEN_DERSLER ICIN TEKRARLA:
+        EGER ON_KOSUL_KARSILANMADI(DERS) ISE
+            MESAJ(DERS + " için ön koşul sağlanmamış.")
+            HATA_VARSAY <- TRUE
+        SON
+
+        EGER KONTENJAN_DOLU(DERS) ISE
+            MESAJ(DERS + " dersinin kontenjanı dolu.")
+            HATA_VARSAY <- TRUE
+        SON
+
+        EGER ZAMAN_CAKISMA(SECILEN_DERSLER) ISE
+            MESAJ("Derslerin saatleri çakışıyor.")
+            HATA_VARSAY <- TRUE
+        SON
+
+        TOPLAM_KREDI ← TOPLAM_KREDI + DERS.KREDI
+    SON
+
+    EGER TOPLAM_KREDI > MAX_KREDI ISE
+        MESAJ("Toplam kredi limiti aşıldı.")
+        HATA_VARSAY <- TRUE
+    SON
+
+    EGER DANISMAN_ONAY_GEREKLI_DERS_SECILDI(SECILEN_DERSLER) VE DANISMAN_ONAY_YOK(KULLANICI_ADI) ISE
+        MESAJ("Danışman onayı gerekli.")
+        HATA_VARSAY <- TRUE
+    SON
+
+ONAY:
+    EGER HATA_VARSAY == FALSE ISE
+        KAYDET_DERSLERI(KULLANICI_ADI, SECILEN_DERSLER)
+        MESAJ("Ders kaydınız başarıyla tamamlandı!")
+    ACIK_DERSLER <- SECILEN_DERSLER
+    SON
+SON
+
+Kontrollerin Açıklaması
+
+Ön Koşul: Dersin alınabilmesi için gerekli önceki derslerin tamamlanması.
+
+Kontenjan: Dersin alabileceği öğrenci sayısı dolmuşsa kayıt engellenir.
+
+Zaman Çakışması: Aynı anda birden fazla ders seçilemez.
+
+Kredi Limiti: Öğrencinin alabileceği maksimum krediye dikkat edilir.
+
+Danışman Onayı: Özellikle ileri seviye dersler veya özel durumlar için danışman onayı gerekir.
+
+İstersen ben bunu Graphviz DOT diliyle akış şemasına da çevirebilirim, böylece hem görsel hem mantıksal olarak tüm sistemi görebilirsin.
+
+Bunu yapmamı ister misin?
+
+Şunu dedin:
+evet lütfen graphvizde net, doğru ve anlaşılır bir akış şeması çıkarabilecek bir dot kodu yapalım. ondan sonra da bu sistemi bana kısaca, doğru ve anlaşılır şekilde 5 6 satır olacak şekilde yaz.
+
+ChatGPT:
+Tamam Nazlı, önce sana Graphviz DOT diliyle net ve doğru bir akış şeması hazırlayacağım. Tüm adımlar ve kontroller mantıksal olarak doğru şekilde gösterilecek:
+
+Graphviz DOT Kodu
+digraph DersKayit {
+    rankdir=TB;
+    node [shape=box, style=rounded, fontname="Arial"];
+
+    GIRIS [label="Öğrenci Girişi\n(Kullanıcı Adı & Şifre)"];
+    GIRIS_BASARILI [label="Giriş Başarılı?", shape=diamond];
+    DERS_LISTESI [label="Ders Listesini Göster"];
+    SECIM [label="Ders Seçimi Yap"];
+    ON_KOSUL [label="Ön Koşul Kontrolü", shape=diamond];
+    KONTENJAN [label="Kontenjan Kontrolü", shape=diamond];
+    ZAMAN [label="Zaman Çakışması Kontrolü", shape=diamond];
+    KREDI [label="Kredi Limiti Kontrolü", shape=diamond];
+    DANISMAN [label="Danışman Onayı Gerekli mi?", shape=diamond];
+    HATA [label="Hata Mesajı Göster", shape=box, style=filled, fillcolor=lightpink];
+    KAYIT [label="Ders Kaydını Onayla", shape=box, style=filled, fillcolor=lightgreen];
+    BITIS [label="Sistem Sonu", shape=oval];
+
+    GIRIS -> GIRIS_BASARILI;
+    GIRIS_BASARILI -> DERS_LISTESI [label="Evet"];
+    GIRIS_BASARILI -> BITIS [label="Hayır"];
+    
+    DERS_LISTESI -> SECIM;
+    SECIM -> ON_KOSUL;
+    
+    ON_KOSUL -> HATA [label="Hayır"];
+    ON_KOSUL -> KONTENJAN [label="Evet"];
+    
+    KONTENJAN -> HATA [label="Hayır"];
+    KONTENJAN -> ZAMAN [label="Evet"];
+    
+    ZAMAN -> HATA [label="Hayır"];
+    ZAMAN -> KREDI [label="Evet"];
+    
+    KREDI -> HATA [label="Hayır"];
+    KREDI -> DANISMAN [label="Evet"];
+    
+    DANISMAN -> HATA [label="Hayır"];
+    DANISMAN -> KAYIT [label="Evet veya Onay Var"];
+    
+    HATA -> SECIM [label="Düzeltme için Geri"];
+    KAYIT -> BITIS;
+}
+
+
+Bu şema akışı baştan sona gösteriyor: giriş, ders listesi, ders seçimi, her bir kontrol (ön koşul, kontenjan, zaman çakışması, kredi limiti, danışman onayı) ve hatalarda geri dönme mantığı net.
+
+Sistemin 5–6 Satırda Açıklaması
+
+Üniversite ders kayıt sistemi, öğrencinin giriş yapmasıyla başlar ve kayıt yapılabilecek dersleri listeler. Öğrenci dersleri seçer ve sistem, seçilen dersler için ön koşul, kontenjan, zaman çakışması, kredi limiti ve danışman onayı kontrollerini yapar. Eğer tüm kontroller geçerse dersler kaydedilir; herhangi bir hata varsa öğrenci bilgilendirilir ve düzeltme yapması istenir. Sistem, hatasız kayıt gerçekleştiğinde başarı mesajı göstererek tamamlanır.
+
+İstersen bir sonraki adımda ben sana bu akışı biraz daha görselleştirilmiş ve renkli bir şekilde hazırlayıp, her kontrolü ayrı renk ile gösteren bir DOT kodu da hazırlayabilirim. Bu, özellikle görselle öğrenmeyi sevenler için çok faydalı olur.
+
+Bunu yapalım mı?

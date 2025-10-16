@@ -1,0 +1,42 @@
+digraph DersKayit {
+    rankdir=TB;
+    node [shape=box, style=rounded, fontname="Arial"];
+
+    GIRIS [label="Öğrenci Girişi\n(Kullanıcı Adı & Şifre)"];
+    GIRIS_BASARILI [label="Giriş Başarılı?", shape=diamond];
+    DERS_LISTESI [label="Ders Listesini Göster"];
+    SECIM [label="Ders Seçimi Yap"];
+    ON_KOSUL [label="Ön Koşul Kontrolü", shape=diamond];
+    KONTENJAN [label="Kontenjan Kontrolü", shape=diamond];
+    ZAMAN [label="Zaman Çakışması Kontrolü", shape=diamond];
+    KREDI [label="Kredi Limiti Kontrolü", shape=diamond];
+    DANISMAN [label="Danışman Onayı Gerekli mi?", shape=diamond];
+    HATA [label="Hata Mesajı Göster", shape=box, style=filled, fillcolor=lightpink];
+    KAYIT [label="Ders Kaydını Onayla", shape=box, style=filled, fillcolor=lightgreen];
+    BITIS [label="Sistem Sonu", shape=oval];
+
+    GIRIS -> GIRIS_BASARILI;
+    GIRIS_BASARILI -> DERS_LISTESI [label="Evet"];
+    GIRIS_BASARILI -> BITIS [label="Hayır"];
+    
+    DERS_LISTESI -> SECIM;
+    SECIM -> ON_KOSUL;
+    
+    ON_KOSUL -> HATA [label="Hayır"];
+    ON_KOSUL -> KONTENJAN [label="Evet"];
+    
+    KONTENJAN -> HATA [label="Hayır"];
+    KONTENJAN -> ZAMAN [label="Evet"];
+    
+    ZAMAN -> HATA [label="Hayır"];
+    ZAMAN -> KREDI [label="Evet"];
+    
+    KREDI -> HATA [label="Hayır"];
+    KREDI -> DANISMAN [label="Evet"];
+    
+    DANISMAN -> HATA [label="Hayır"];
+    DANISMAN -> KAYIT [label="Evet veya Onay Var"];
+    
+    HATA -> SECIM [label="Düzeltme için Geri"];
+    KAYIT -> BITIS;
+}

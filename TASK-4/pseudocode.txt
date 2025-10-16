@@ -1,0 +1,56 @@
+ALGORITMA DERS_KAYIT_SISTEMI
+
+GIRIS:
+    KULLANICI_ADI ← input("Kullanıcı Adı: ")
+    SIFRE ← input("Şifre: ")
+    EGER GIRIS_BASARILI(KULLANICI_ADI, SIFRE) == FALSE ISE
+        MESAJ("Giriş başarısız! Kullanıcı adı veya şifre hatalı.")
+        BITIR
+    SON
+
+DERS_LISTESI ← GETIR_SECILEBILIR_DERSLER(KULLANICI_ADI)
+GOSTER(DERS_LISTESI)
+
+DERS_SECIMI:
+    SECILEN_DERSLER ← input("Seçmek istediğiniz dersleri girin: ")
+
+KONTROLLER:
+    TOPLAM_KREDI ← 0
+    HATA_VARSAY <- FALSE
+
+    HER DERS IN SECILEN_DERSLER ICIN TEKRARLA:
+        EGER ON_KOSUL_KARSILANMADI(DERS) ISE
+            MESAJ(DERS + " için ön koşul sağlanmamış.")
+            HATA_VARSAY <- TRUE
+        SON
+
+        EGER KONTENJAN_DOLU(DERS) ISE
+            MESAJ(DERS + " dersinin kontenjanı dolu.")
+            HATA_VARSAY <- TRUE
+        SON
+
+        EGER ZAMAN_CAKISMA(SECILEN_DERSLER) ISE
+            MESAJ("Derslerin saatleri çakışıyor.")
+            HATA_VARSAY <- TRUE
+        SON
+
+        TOPLAM_KREDI ← TOPLAM_KREDI + DERS.KREDI
+    SON
+
+    EGER TOPLAM_KREDI > MAX_KREDI ISE
+        MESAJ("Toplam kredi limiti aşıldı.")
+        HATA_VARSAY <- TRUE
+    SON
+
+    EGER DANISMAN_ONAY_GEREKLI_DERS_SECILDI(SECILEN_DERSLER) VE DANISMAN_ONAY_YOK(KULLANICI_ADI) ISE
+        MESAJ("Danışman onayı gerekli.")
+        HATA_VARSAY <- TRUE
+    SON
+
+ONAY:
+    EGER HATA_VARSAY == FALSE ISE
+        KAYDET_DERSLERI(KULLANICI_ADI, SECILEN_DERSLER)
+        MESAJ("Ders kaydınız başarıyla tamamlandı!")
+    ACIK_DERSLER <- SECILEN_DERSLER
+    SON
+SON
