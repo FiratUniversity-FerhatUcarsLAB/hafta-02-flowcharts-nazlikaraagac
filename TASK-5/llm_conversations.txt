@@ -1,0 +1,347 @@
+şunu dedin:
+IoT tabanlı akıllı ev güvenlik sisteminin alarm ve bildirim süreçlerinin detaylı, doğru düzgün ve anlaşılır bir algoritmasını yapmanı istiyorum. sistemin içinde şunların olması gerekiyor: Sistem aktif mi kontrolü (koşul) Sensör okuma döngüsü (döngü-sürekli) Hareket sensörü kontrolü (koşul) Kapı/pencere sensörü kontrolü (koşul) Kamera aktivasyonu (koşul) Yanlış alarm kontrolü (ev sahibi evde mi?) (koşul) Alarm seviyesi belirleme (1-düşük, 2-orta, 3-yüksek) (koşul) Bildirim gönderme (SMS + App + Email) Bekle ve tekrar kontrol et (döngü) Alarm sıfırlama veya devam ettirme (koşul). bunun detaylı ve anlaşılır bir şekilde pseudocodeunu yazmanı da istiyorum. ayrıca şunu unutma: akıllı güvenlik ev sistemleri 7/24 çalışır.  Ana döngü içinde sensör okuma, 
+ tehdit algılama, alarm verme ve bildirim gönderme süreçlerini pseudocodeun içine dahil etmelisin. ana döngü sürekli çalışır (doğru koşulu ile). her döngü iterasyonunda tüm sensörler kontrol edilir. tehdit seviyesine göre farklı aksiyonlar alınır. alarm sıfırlama komutu gelene kadar devam eder. artı olarak bunu dot dilinde de yazalım. sonsuz döngüyü göstermek için geri ok kullanıp sürekli etiketi ekleyelim.
+
+ChatGPT:
+Tamam, burada sistemini adım adım kuralım. Senin istediğin yapı gerçek bir IoT tabanlı güvenlik sistemi gibi olacak: sürekli çalışan bir ana döngü, sensörlerden okuma, tehdit analizi, alarm ve bildirim süreci, ayrıca yanlış alarm (ev sahibi evdeyse) kontrolü.
+
+Ben önce pseudocode’u yazacağım, sonra da dot (Graphviz) kodunu vereceğim.
+
+📌 Pseudocode (Detaylı ve Açıklamalı)
+ALGORITMA AKILLI_EV_GUVENLIK
+
+    SISTEM_AKTIF ← TRUE
+    ALARM_DURUMU ← FALSE
+    EV_SAHIBI_EVDE ← FALSE
+
+    FONKSIYON ALARM_SEVIYESI_BELIRLE(hareket, kapi, pencere, kamera)
+        EGER hareket VEYA kapi VEYA pencere ALGILANDI ISE
+            EGER kamera GORUNTU ALGILADI ISE
+                DON 3   // Yüksek seviye alarm
+            DEĞILSE
+                DON 2   // Orta seviye alarm
+        DEĞILSE
+            DON 1       // Düşük seviye alarm (normal durum)
+    SON
+
+    // Ana döngü: 7/24 sürekli çalışır
+    WHILE SISTEM_AKTIF = TRUE DO
+
+        // Sensör verilerini oku
+        hareket ← HAREKET_SENSOR_OKU()
+        kapi ← KAPI_SENSOR_OKU()
+        pencere ← PENCERE_SENSOR_OKU()
+        kamera ← KAMERA_KONTROL()
+
+        // Alarm seviyesi belirle
+        SEVIYE ← ALARM_SEVIYESI_BELIRLE(hareket, kapi, pencere, kamera)
+
+        // Yanlış alarm kontrolü (Ev sahibi evdeyse alarm devre dışı)
+        EGER EV_SAHIBI_EVDE = TRUE VE SEVIYE > 1 ISE
+            ALARM_DURUMU ← FALSE
+            BILDIRIM_GONDER("Ev sahibi evde, alarm iptal edildi.")
+        DEGILSE
+            EGER SEVIYE = 2 ISE
+                ALARM_DURUMU ← TRUE
+                BILDIRIM_GONDER("Orta seviye tehdit algılandı!", SMS, APP, EMAIL)
+            EGER SEVIYE = 3 ISE
+                ALARM_DURUMU ← TRUE
+                BILDIRIM_GONDER("Yüksek seviye tehdit algılandı!", SMS, APP, EMAIL)
+                KAMERA_AKTIF_ET()
+        SON
+
+        // Alarm durumu kontrolü
+        EGER ALARM_DURUMU = TRUE ISE
+            SESLI_ALARM_CAL()
+            // Alarm sıfırlama komutu bekle
+            EGER KULLANICI_ALARM_SIFIRLAMA() = TRUE ISE
+                ALARM_DURUMU ← FALSE
+                SESLI_ALARM_DUR()
+                BILDIRIM_GONDER("Alarm sıfırlandı.")
+        SON
+
+        // Bekle ve tekrar kontrol et (sonsuz döngü)
+        BEKLE(5 saniye)
+
+    END WHILE
+
+SON
+
+📌 DOT (Graphviz) Kodu
+
+Burada sonsuz döngüyü göstermek için geri ok ve [SÜREKLİ] etiketi ekledim.
+
+digraph G {
+    rankdir=TB;
+    node [shape=rectangle, style=rounded];
+
+    START [label="Sistem Başlat"];
+    CHECK_ACTIVE [label="Sistem Aktif mi?", shape=diamond];
+    SENSOR [label="Sensörleri Oku\n(Hareket, Kapı, Pencere, Kamera)"];
+    ALARM_LEVEL [label="Alarm Seviyesi Belirle", shape=diamond];
+    OWNER [label="Ev sahibi evde mi?", shape=diamond];
+    FALSE_ALARM [label="Yanlış Alarm → Bildirim Gönder"];
+    MEDIUM [label="Orta Tehdit\nBildirim Gönder (SMS+App+Email)"];
+    HIGH [label="Yüksek Tehdit\nBildirim Gönder + Kamera Aktif + Alarm"];
+    ALARM_ON [label="Alarm Çalıyor"];
+    RESET [label="Kullanıcı Alarm Sıfırladı mı?", shape=diamond];
+    RESET_DONE [label="Alarm Sıfırlandı"];
+    WAIT [label="Bekle (5sn)"];
+    LOOP [label="[SÜREKLİ]", shape=plaintext];
+
+    START -> CHECK_ACTIVE;
+    CHECK_ACTIVE -> SENSOR [label="Evet"];
+    CHECK_ACTIVE -> LOOP [label="Hayır"];
+
+    SENSOR -> ALARM_LEVEL;
+    ALARM_LEVEL -> OWNER [label="Seviye > 1"];
+    ALARM_LEVEL -> WAIT [label="Seviye=1"];
+
+    OWNER -> FALSE_ALARM [label="Evet"];
+    OWNER -> MEDIUM [label="Hayır, Seviye=2"];
+    OWNER -> HIGH [label="Hayır, Seviye=3"];
+
+    FALSE_ALARM -> WAIT;
+    MEDIUM -> ALARM_ON;
+    HIGH -> ALARM_ON;
+
+    ALARM_ON -> RESET;
+    RESET -> RESET_DONE [label="Evet"];
+    RESET -> WAIT [label="Hayır"];
+    RESET_DONE -> WAIT;
+
+    WAIT -> SENSOR [label="Döngüye Geri Dön"];
+    SENSOR -> SENSOR [label=" "]; // infinite loop arrow
+}
+
+
+Bu yapı sana tam anlamıyla çalışan bir güvenlik sistemi algoritması veriyor. Sürekli döngüde sensörleri kontrol ediyor, alarm seviyesini belirliyor, yanlış alarm durumlarını engelliyor, bildirimleri farklı kanallardan gönderiyor ve alarm sıfırlanana kadar devam ediyor.
+
+Bunu istersen sonraki adımda gerçek bir state machine (durum makinesi) mantığıyla da kurabiliriz. Bu tarz sistemler gerçek hayatta genellikle event-driven (olay tabanlı) şekilde uygulanır.
+
+İstersen ben bunu bir sonraki aşamada gerçek bir IoT sistemine uygun event-driven pseudocode (mesela Python vari bir yazım) da çıkartabilirim. İster misin?
+
+Şunu dedin:
+dot kodu yeterince iyi değil. graphvizde tüm sembolleri doğru gösterecek şekilde renkli bir dot kodu yapalım.
+
+ChatGPT:
+Haklısın kanka, önceki DOT kodu basit kaldı. Gerçek bir akış diyagramı gibi görünsün istiyorsun. Graphviz’de doğru sembolleri (başlangıç, karar, işlem, çıktı) ve renkleri kullanarak çok daha okunabilir hale getirelim.
+
+Aşağıda verdiğim DOT kodu:
+
+Başlangıç/Bitiş: oval, yeşil.
+
+Karar noktaları: elmas (diamond), mavi kenar.
+
+İşlemler: dikdörtgen, gri arka plan.
+
+Giriş/Çıkış (bildirim gibi): paralelkenar, turuncu.
+
+Döngüyü göstermek için ok geri dönüyor ve üzerinde “SÜREKLİ” etiketi var.
+
+📌 Renkli ve Doğru Sembollü DOT Kodu
+digraph G {
+    rankdir=TB;
+    fontsize=12;
+    labelloc="t";
+    label="IoT Akıllı Ev Güvenlik Sistemi Akış Diyagramı";
+
+    // Genel node stilleri
+    node [fontname="Arial", fontsize=11, style=filled];
+
+    // Node tipleri
+    startend [shape=oval, fillcolor=lightgreen, style=filled];
+    process [shape=rectangle, fillcolor=lightgray];
+    decision [shape=diamond, fillcolor=lightblue];
+    output [shape=parallelogram, fillcolor=orange];
+
+    // Düğümler
+    START    [label="Sistem Başlat", shape=oval, fillcolor=lightgreen];
+    CHECK_ACTIVE [label="Sistem Aktif mi?", shape=diamond, fillcolor=lightblue];
+    SENSOR   [label="Sensörleri Oku\n(Hareket, Kapı, Pencere, Kamera)", shape=rectangle, fillcolor=lightgray];
+    ALARM_LEVEL [label="Alarm Seviyesi Belirle", shape=diamond, fillcolor=lightblue];
+    OWNER    [label="Ev sahibi evde mi?", shape=diamond, fillcolor=lightblue];
+    FALSE_ALARM [label="Yanlış Alarm\n(Bildirim Gönder)", shape=parallelogram, fillcolor=orange];
+    MEDIUM   [label="Orta Tehdit\n(Bildirim Gönder)", shape=parallelogram, fillcolor=orange];
+    HIGH     [label="Yüksek Tehdit\n(Bildirim + Kamera + Alarm)", shape=parallelogram, fillcolor=orange];
+    ALARM_ON [label="Alarm Çalıyor", shape=rectangle, fillcolor=lightgray];
+    RESET    [label="Kullanıcı Alarmı\nSıfırladı mı?", shape=diamond, fillcolor=lightblue];
+    RESET_DONE [label="Alarm Sıfırlandı", shape=rectangle, fillcolor=lightgray];
+    WAIT     [label="Bekle (5sn)", shape=rectangle, fillcolor=lightgray];
+    LOOP     [label="[SÜREKLİ]", shape=plaintext];
+
+    // Bağlantılar
+    START -> CHECK_ACTIVE;
+    CHECK_ACTIVE -> SENSOR [label="Evet"];
+    CHECK_ACTIVE -> LOOP [label="Hayır"];
+
+    SENSOR -> ALARM_LEVEL;
+    ALARM_LEVEL -> OWNER [label="Seviye > 1"];
+    ALARM_LEVEL -> WAIT [label="Seviye = 1"];
+
+    OWNER -> FALSE_ALARM [label="Evet"];
+    OWNER -> MEDIUM [label="Hayır, Seviye=2"];
+    OWNER -> HIGH [label="Hayır, Seviye=3"];
+
+    FALSE_ALARM -> WAIT;
+    MEDIUM -> ALARM_ON;
+    HIGH -> ALARM_ON;
+
+    ALARM_ON -> RESET;
+    RESET -> RESET_DONE [label="Evet"];
+    RESET -> WAIT [label="Hayır"];
+    RESET_DONE -> WAIT;
+
+    WAIT -> SENSOR [label="SÜREKLİ"];
+}
+
+
+Bu kodu Graphviz’de çalıştırdığında:
+
+Her kutunun rengi farklı olacak,
+
+Karar noktaları elmas şeklinde,
+
+Başlangıç noktası oval,
+
+Bildirim adımları turuncu paralelkenar olarak çıkacak,
+
+Sonsuz döngü WAIT → SENSOR bağlantısı üzerinden “SÜREKLİ” etiketiyle gösterilecek.
+
+İstersen bunu daha da geliştirip alarm seviyelerini (1–2–3) ayrı ayrı renk tonlarıyla vurgulayabilirim. İster misin alarm seviyelerini yeşil (1), sarı (2), kırmızı (3) renkli kutularla göstereyim?
+
+Şunu dedin:
+ayrıca pseudocode da basit gibi daha detaylı ve anlaşılır yapalım.
+
+ChatGPT:
+Tamamdır kanka, haklısın. Bir güvenlik sistemi gibi düşünürsek pseudocode’un biraz daha profesyonel, yani “her ihtimali açıklayan, iyi yorumlanabilir” bir yapıda olması lazım. Önce verdiğim pseudocode çok sade kalmış. Şimdi daha detaylı bir versiyonunu çıkaracağım:
+
+7/24 çalışma vurgusu var.
+
+Sensörlerin sürekli okunması ayrıntılı.
+
+Alarm seviyesi nasıl belirlendiği açık.
+
+Yanlış alarm (ev sahibi evdeyse) durumu net ayrılmış.
+
+Alarm sıfırlama süreci, bildirim kanalları ayrı ayrı yazılmış.
+
+Her aşamaya küçük açıklamalar ekledim.
+
+📌 Detaylı Pseudocode
+ALGORITMA AKILLI_EV_GUVENLIK
+
+    // Başlangıç değerleri
+    SISTEM_AKTIF ← TRUE
+    ALARM_DURUMU ← FALSE
+    EV_SAHIBI_EVDE ← FALSE
+    ALARM_SEVIYESI ← 0
+
+    // Sensör okuma fonksiyonları
+    FONKSIYON HAREKET_SENSOR_OKU() → BOOLEAN
+        // Hareket algılandıysa TRUE döner
+    SON
+
+    FONKSIYON KAPI_SENSOR_OKU() → BOOLEAN
+        // Kapı açıldıysa TRUE döner
+    SON
+
+    FONKSIYON PENCERE_SENSOR_OKU() → BOOLEAN
+        // Pencere açıldıysa TRUE döner
+    SON
+
+    FONKSIYON KAMERA_KONTROL() → BOOLEAN
+        // Kamera şüpheli görüntü algılarsa TRUE döner
+    SON
+
+    // Alarm seviyesini belirleme fonksiyonu
+    FONKSIYON ALARM_SEVIYESI_BELIRLE(hareket, kapi, pencere, kamera) → INTEGER
+        EGER hareket = TRUE VEYA kapi = TRUE VEYA pencere = TRUE ISE
+            EGER kamera = TRUE ISE
+                DON 3  // Yüksek tehdit
+            DEĞILSE
+                DON 2  // Orta tehdit
+        DEĞILSE
+            DON 1      // Düşük (normal durum)
+    SON
+
+    // Bildirim gönderme fonksiyonu
+    FONKSIYON BILDIRIM_GONDER(mesaj, kanallar)
+        HER kanal ∈ kanallar YAP
+            GONDER(mesaj, kanal)   // SMS, APP, EMAIL gibi
+        SON
+    SON
+
+    // Ana döngü - Sistem sürekli çalışır (7/24)
+    WHILE SISTEM_AKTIF = TRUE DO
+
+        // Sensörleri oku
+        hareket ← HAREKET_SENSOR_OKU()
+        kapi ← KAPI_SENSOR_OKU()
+        pencere ← PENCERE_SENSOR_OKU()
+        kamera ← KAMERA_KONTROL()
+
+        // Alarm seviyesini belirle
+        ALARM_SEVIYESI ← ALARM_SEVIYESI_BELIRLE(hareket, kapi, pencere, kamera)
+
+        // Tehdit yoksa döngü tekrarına geç
+        EGER ALARM_SEVIYESI = 1 ISE
+            BEKLE(5 saniye)
+            DEVAM ET DÖNGÜ
+
+        // Yanlış alarm kontrolü
+        EGER EV_SAHIBI_EVDE = TRUE VE ALARM_SEVIYESI > 1 ISE
+            ALARM_DURUMU ← FALSE
+            BILDIRIM_GONDER("Ev sahibi evde, alarm iptal edildi.", [APP])
+            BEKLE(5 saniye)
+            DEVAM ET DÖNGÜ
+
+        // Orta seviye alarm
+        EGER ALARM_SEVIYESI = 2 ISE
+            ALARM_DURUMU ← TRUE
+            BILDIRIM_GONDER("Orta seviye tehdit algılandı!", [SMS, APP, EMAIL])
+
+        // Yüksek seviye alarm
+        EGER ALARM_SEVIYESI = 3 ISE
+            ALARM_DURUMU ← TRUE
+            KAMERA_AKTIF_ET()
+            SESLI_ALARM_CAL()
+            BILDIRIM_GONDER("Yüksek seviye tehdit algılandı!", [SMS, APP, EMAIL])
+
+        // Alarm devredeyse kullanıcı sıfırlama kontrolü
+        EGER ALARM_DURUMU = TRUE ISE
+            EGER KULLANICI_ALARM_SIFIRLAMA() = TRUE ISE
+                ALARM_DURUMU ← FALSE
+                SESLI_ALARM_DUR()
+                BILDIRIM_GONDER("Alarm sıfırlandı.", [APP])
+            DEGILSE
+                // Alarm aktif kalmaya devam eder
+                DEVAM ET ALARM_DURUMU
+
+        // Döngü tekrar başa döner
+        BEKLE(5 saniye)
+
+    END WHILE
+
+SON
+
+
+Bu versiyon daha “üretim seviyesine yakın” bir pseudocode oldu:
+
+Fonksiyonlar net tanımlandı,
+
+Koşullar birbirinden ayrıldı,
+
+Bildirim kanalları ayrı bir parametre ile yönetiliyor,
+
+Alarm sıfırlanana kadar sistemin aktif kalması sağlandı.
+
+İstersen ben bu pseudocode’u bir sonraki adımda gerçek kod mantığıyla (Python veya Java gibi) event-driven (olay tabanlı) bir şekilde de tasarlayabilirim. O zaman gerçek bir IoT cihazda nasıl işleneceğini de görebilirsin.
+
+Bunu ister misin?
+
+Şunu dedin:
+tamamdır harika. şimdi de bu sistemin açıklamasını net, anlaşılır ve kısaca yapalım en fazla 5 6 satırlık olsun.
+
+ChatGPT:
+Bu IoT tabanlı akıllı ev güvenlik sistemi 7/24 çalışan bir döngü mantığıyla çalışır. Sensörlerden (hareket, kapı, pencere, kamera) sürekli veri okunur ve olası tehditler analiz edilir. Tehdidin büyüklüğüne göre alarm seviyesi belirlenir: düşük (normal), orta (şüpheli) ve yüksek (kritik). Ev sahibi evdeyse yanlış alarm engellenir, aksi durumda sistem SMS, uygulama ve e-posta üzerinden bildirim gönderir. Yüksek tehditte kamera aktifleşir, sesli alarm çalar ve kullanıcı sıfırlama yapana kadar sistem alarm durumunu korur. Bu süreç sürekli tekrar eder.

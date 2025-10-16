@@ -1,0 +1,54 @@
+digraph G {
+    rankdir=TB;
+    fontsize=12;
+    labelloc="t";
+    label="IoT Akıllı Ev Güvenlik Sistemi Akış Diyagramı";
+
+    // Genel node stilleri
+    node [fontname="Arial", fontsize=11, style=filled];
+
+    // Node tipleri
+    startend [shape=oval, fillcolor=lightgreen, style=filled];
+    process [shape=rectangle, fillcolor=lightgray];
+    decision [shape=diamond, fillcolor=lightblue];
+    output [shape=parallelogram, fillcolor=orange];
+
+    // Düğümler
+    START    [label="Sistem Başlat", shape=oval, fillcolor=lightgreen];
+    CHECK_ACTIVE [label="Sistem Aktif mi?", shape=diamond, fillcolor=lightblue];
+    SENSOR   [label="Sensörleri Oku\n(Hareket, Kapı, Pencere, Kamera)", shape=rectangle, fillcolor=lightgray];
+    ALARM_LEVEL [label="Alarm Seviyesi Belirle", shape=diamond, fillcolor=lightblue];
+    OWNER    [label="Ev sahibi evde mi?", shape=diamond, fillcolor=lightblue];
+    FALSE_ALARM [label="Yanlış Alarm\n(Bildirim Gönder)", shape=parallelogram, fillcolor=orange];
+    MEDIUM   [label="Orta Tehdit\n(Bildirim Gönder)", shape=parallelogram, fillcolor=orange];
+    HIGH     [label="Yüksek Tehdit\n(Bildirim + Kamera + Alarm)", shape=parallelogram, fillcolor=orange];
+    ALARM_ON [label="Alarm Çalıyor", shape=rectangle, fillcolor=lightgray];
+    RESET    [label="Kullanıcı Alarmı\nSıfırladı mı?", shape=diamond, fillcolor=lightblue];
+    RESET_DONE [label="Alarm Sıfırlandı", shape=rectangle, fillcolor=lightgray];
+    WAIT     [label="Bekle (5sn)", shape=rectangle, fillcolor=lightgray];
+    LOOP     [label="[SÜREKLİ]", shape=plaintext];
+
+    // Bağlantılar
+    START -> CHECK_ACTIVE;
+    CHECK_ACTIVE -> SENSOR [label="Evet"];
+    CHECK_ACTIVE -> LOOP [label="Hayır"];
+
+    SENSOR -> ALARM_LEVEL;
+    ALARM_LEVEL -> OWNER [label="Seviye > 1"];
+    ALARM_LEVEL -> WAIT [label="Seviye = 1"];
+
+    OWNER -> FALSE_ALARM [label="Evet"];
+    OWNER -> MEDIUM [label="Hayır, Seviye=2"];
+    OWNER -> HIGH [label="Hayır, Seviye=3"];
+
+    FALSE_ALARM -> WAIT;
+    MEDIUM -> ALARM_ON;
+    HIGH -> ALARM_ON;
+
+    ALARM_ON -> RESET;
+    RESET -> RESET_DONE [label="Evet"];
+    RESET -> WAIT [label="Hayır"];
+    RESET_DONE -> WAIT;
+
+    WAIT -> SENSOR [label="SÜREKLİ"];
+}

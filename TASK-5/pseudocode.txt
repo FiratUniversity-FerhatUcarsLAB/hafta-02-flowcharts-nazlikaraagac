@@ -1,0 +1,95 @@
+ALGORITMA AKILLI_EV_GUVENLIK
+
+    // Başlangıç değerleri
+    SISTEM_AKTIF ← TRUE
+    ALARM_DURUMU ← FALSE
+    EV_SAHIBI_EVDE ← FALSE
+    ALARM_SEVIYESI ← 0
+
+    // Sensör okuma fonksiyonları
+    FONKSIYON HAREKET_SENSOR_OKU() → BOOLEAN
+        // Hareket algılandıysa TRUE döner
+    SON
+
+    FONKSIYON KAPI_SENSOR_OKU() → BOOLEAN
+        // Kapı açıldıysa TRUE döner
+    SON
+
+    FONKSIYON PENCERE_SENSOR_OKU() → BOOLEAN
+        // Pencere açıldıysa TRUE döner
+    SON
+
+    FONKSIYON KAMERA_KONTROL() → BOOLEAN
+        // Kamera şüpheli görüntü algılarsa TRUE döner
+    SON
+
+    // Alarm seviyesini belirleme fonksiyonu
+    FONKSIYON ALARM_SEVIYESI_BELIRLE(hareket, kapi, pencere, kamera) → INTEGER
+        EGER hareket = TRUE VEYA kapi = TRUE VEYA pencere = TRUE ISE
+            EGER kamera = TRUE ISE
+                DON 3  // Yüksek tehdit
+            DEĞILSE
+                DON 2  // Orta tehdit
+        DEĞILSE
+            DON 1      // Düşük (normal durum)
+    SON
+
+    // Bildirim gönderme fonksiyonu
+    FONKSIYON BILDIRIM_GONDER(mesaj, kanallar)
+        HER kanal ∈ kanallar YAP
+            GONDER(mesaj, kanal)   // SMS, APP, EMAIL gibi
+        SON
+    SON
+
+    // Ana döngü - Sistem sürekli çalışır (7/24)
+    WHILE SISTEM_AKTIF = TRUE DO
+
+        // Sensörleri oku
+        hareket ← HAREKET_SENSOR_OKU()
+        kapi ← KAPI_SENSOR_OKU()
+        pencere ← PENCERE_SENSOR_OKU()
+        kamera ← KAMERA_KONTROL()
+
+        // Alarm seviyesini belirle
+        ALARM_SEVIYESI ← ALARM_SEVIYESI_BELIRLE(hareket, kapi, pencere, kamera)
+
+        // Tehdit yoksa döngü tekrarına geç
+        EGER ALARM_SEVIYESI = 1 ISE
+            BEKLE(5 saniye)
+            DEVAM ET DÖNGÜ
+
+        // Yanlış alarm kontrolü
+        EGER EV_SAHIBI_EVDE = TRUE VE ALARM_SEVIYESI > 1 ISE
+            ALARM_DURUMU ← FALSE
+            BILDIRIM_GONDER("Ev sahibi evde, alarm iptal edildi.", [APP])
+            BEKLE(5 saniye)
+            DEVAM ET DÖNGÜ
+
+        // Orta seviye alarm
+        EGER ALARM_SEVIYESI = 2 ISE
+            ALARM_DURUMU ← TRUE
+            BILDIRIM_GONDER("Orta seviye tehdit algılandı!", [SMS, APP, EMAIL])
+
+        // Yüksek seviye alarm
+        EGER ALARM_SEVIYESI = 3 ISE
+            ALARM_DURUMU ← TRUE
+            KAMERA_AKTIF_ET()
+            SESLI_ALARM_CAL()
+            BILDIRIM_GONDER("Yüksek seviye tehdit algılandı!", [SMS, APP, EMAIL])
+
+        // Alarm devredeyse kullanıcı sıfırlama kontrolü
+        EGER ALARM_DURUMU = TRUE ISE
+            EGER KULLANICI_ALARM_SIFIRLAMA() = TRUE ISE
+                ALARM_DURUMU ← FALSE
+                SESLI_ALARM_DUR()
+                BILDIRIM_GONDER("Alarm sıfırlandı.", [APP])
+            DEGILSE
+                // Alarm aktif kalmaya devam eder
+                DEVAM ET ALARM_DURUMU
+
+        // Döngü tekrar başa döner
+        BEKLE(5 saniye)
+
+    END WHILE
+
+SON
