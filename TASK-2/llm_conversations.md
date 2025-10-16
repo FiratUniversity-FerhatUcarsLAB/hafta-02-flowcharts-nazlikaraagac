@@ -1,4 +1,6 @@
+şunu dedin: 
 birinci sınıf yazılım mühendisliği öğrencisi olarak algoritmayı mükemmel bir şekilde ve ince ayrıntısına kadar kavramaya çalışıyorum. şu an yapmam gereken şey e-ticaret sitesinde sepet yönetimi ve ödeme sistemini adım adım, en harika şekilde ve hiçbir detayı atlamadan yazmak, pseudocodeunu oluşturmak ve dot diline çevirmek. bana bu konuda en iyi şekilde yardımcı olacağını ve en güzel sonuçları vereceğini biliyorum. Ayrıca kullanıcı girişi, ürün ekleme, stok kontrolü, indirim kodu, kargo hesaplama  ve ödeme aşamalarını içermeli bu algoritma.
+
 ChatGPT:
 32s boyunca düşündüm
 
@@ -453,8 +455,8 @@ Hangi adımı önce gerçek koda dökmek istersin? Ben hazır bekliyorum — ama
 
 Şunu dedin:
 bu dot kodu fazla iyi değil. graphvizden akış şemasına çevirebileceğim şekilde daha anlaşılır bir dot kodu yazalım.
-ChatGPT:
 
+ChatGPT:
 Haklısın kanka, önceki DOT biraz karmaşık ve Graphviz’e atınca tam akış şeması gibi net görünmeyebilir. Daha sade, dikey akış şeması mantığında, klasik decision diamond ve process kutularıyla okunabilir bir versiyon yazalım.
 
 Burada:
@@ -524,8 +526,8 @@ Bu şemayı Graphviz’de render edince dikey bir adım adım checkout flowchart
 
 Şunu dedin:
 bu daha iyi oldu. şimdi de sistemin açıklamasını net bir şekilde ve 5 6 satır olacak şekilde yapalım.
-ChatGPT:
 
+ChatGPT:
 Tamamdır, bak sistemin net özeti şöyle:
 
 E-ticaret sitesinde kullanıcı giriş yaptıktan veya misafir olarak devam ettikten sonra ürünleri sepete ekler. Sepete eklenen ürünler stok kontrolünden geçer, yeterli stok varsa rezervasyon yapılır. Kullanıcı sepetini görüntüler ve isterse indirim kodu uygular, ardından kargo ücreti hesaplanır. Checkout aşamasında stok tekrar doğrulanır ve sipariş kaydı oluşturulur. Kullanıcı ödeme sağlayıcısına yönlendirilir, ödeme başarılı olursa sipariş onaylanır ve kargoya hazırlanır, başarısız olursa rezervasyon iptal edilir.
