@@ -1,0 +1,51 @@
+digraph EcommerceCheckout {
+    rankdir=TB;
+    node [shape=box, style=rounded, fontsize=10];
+
+    Start [shape=oval, label="Başla"];
+    Login [label="Kullanıcı girişi / misafir"];
+    Browse [label="Ürünleri görüntüle"];
+    AddCart [label="Ürün sepete ekle"];
+    StockCheck [shape=diamond, label="Stok yeterli mi?"];
+    Reservation [label="Rezervasyon oluştur"];
+    OutOfStock [label="Stok yetersiz → Uyarı"];
+    ViewCart [label="Sepeti görüntüle"];
+    Coupon [shape=diamond, label="İndirim kodu geçerli mi?"];
+    CouponApplied [label="Kupon uygulandı"];
+    CouponFail [label="Kupon geçersiz"];
+    Shipping [label="Kargo hesaplama"];
+    Checkout [label="Checkout başlat"];
+    FinalStock [shape=diamond, label="Stok tekrar uygun mu?"];
+    OrderCreate [label="Sipariş oluştur"];
+    PaymentIntent [label="Ödeme isteği oluştur"];
+    PaymentProvider [label="Ödeme sağlayıcısına yönlendir"];
+    PaymentResult [shape=diamond, label="Ödeme başarılı mı?"];
+    OrderPaid [label="Sipariş onaylandı → Kargoya hazırla"];
+    OrderFail [label="Ödeme başarısız → Rezervasyon iptal"];
+    End [shape=oval, label="Bitiş"];
+
+    // Flow connections
+    Start -> Login -> Browse -> AddCart -> StockCheck;
+    StockCheck -> Reservation [label="Evet"];
+    StockCheck -> OutOfStock [label="Hayır"];
+    Reservation -> ViewCart;
+    OutOfStock -> ViewCart;
+
+    ViewCart -> Coupon;
+    Coupon -> CouponApplied [label="Evet"];
+    Coupon -> CouponFail [label="Hayır"];
+    CouponApplied -> Shipping;
+    CouponFail -> Shipping;
+
+    Shipping -> Checkout -> FinalStock;
+    FinalStock -> OrderCreate [label="Evet"];
+    FinalStock -> OutOfStock [label="Hayır"];
+
+    OrderCreate -> PaymentIntent -> PaymentProvider -> PaymentResult;
+    PaymentResult -> OrderPaid [label="Evet"];
+    PaymentResult -> OrderFail [label="Hayır"];
+
+    OrderPaid -> End;
+    OrderFail -> End;
+}
+
