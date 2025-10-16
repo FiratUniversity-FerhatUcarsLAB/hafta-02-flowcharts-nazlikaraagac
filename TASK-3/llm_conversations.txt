@@ -1,0 +1,233 @@
+hastane randevu sisteminin algoritmasını adım adım ve hiçbir detayı kaçırmadan yazalım. kimlik doğrulama, poliklinik seçimi, doktor listesi görüntüleme, uygun saatleri gösterme, randevu onaylama ve sms gönderme adımlarının her birini de içermeli. bunu en doğru ve düzenli şekilde yapmalısın.
+
+ChatGPT:
+Tamam kanka, bunu yazılım mühendisi gözüyle ve adım adım, hiçbir detayı kaçırmadan net bir pseudocode ile çıkaralım. Sistemimiz tamamen mantıklı, güvenli ve gerçek dünyadaki hastane randevu sistemlerini referans alacak şekilde olacak. Aşağıdaki algoritma adım adım ilerliyor:
+
+ALGORİTMA: HASTANE_RANDEVU_SISTEMI
+
+Kullanıcı Kimlik Doğrulama
+
+GİRİŞ:
+    KULLANICI_ID ← Kullanıcıdan al
+    SIFRE ← Kullanıcıdan al
+    EĞER Kullanıcı yoksa veya şifre yanlışsa:
+        MESAJ("Kimlik doğrulama başarısız. Lütfen tekrar deneyin.")
+        SONLANDIR
+    Aksi halde:
+        MESAJ("Kimlik doğrulama başarılı. Devam ediliyor...")
+
+
+Poliklinik Seçimi
+
+POLIKLINIK_LISTESI ← DB.GetPoliklinikListesi()
+MESAJ("Lütfen polikliniğinizi seçin:")
+POLIKLINIK_SECIM ← Kullanıcıdan al
+EĞER POLIKLINIK_SECIM geçerli değilse:
+    MESAJ("Geçersiz poliklinik seçimi.")
+    TEKRAR POLIKLINIK_SECIM
+
+
+Doktor Listesi Görüntüleme
+
+DOKTOR_LISTESI ← DB.GetDoktorlar(POLIKLINIK_SECIM)
+MESAJ("Seçtiğiniz poliklinikteki doktorlar:")
+DOKTOR_SECIM ← Kullanıcıdan al
+EĞER DOKTOR_SECIM geçerli değilse:
+    MESAJ("Geçersiz doktor seçimi.")
+    TEKRAR DOKTOR_SECIM
+
+
+Uygun Saatleri Gösterme
+
+UYGUN_SAATLER ← DB.GetBosSaatler(DOKTOR_SECIM, TARIH)
+EĞER UYGUN_SAATLER boşsa:
+    MESAJ("Seçilen tarihte uygun randevu yok. Lütfen başka tarih seçin.")
+    TEKRAR TARIH
+MESAJ("Uygun saatler:")
+SAAT_SECIM ← Kullanıcıdan al
+EĞER SAAT_SECIM geçerli değilse:
+    MESAJ("Geçersiz saat seçimi.")
+    TEKRAR SAAT_SECIM
+
+
+Randevu Onaylama
+
+MESAJ("Randevunuz şu şekilde oluşturulacak:")
+MESAJ("Poliklinik: " + POLIKLINIK_SECIM)
+MESAJ("Doktor: " + DOKTOR_SECIM)
+MESAJ("Tarih & Saat: " + TARIH + " " + SAAT_SECIM)
+ONAY ← Kullanıcıdan al (Evet/Hayır)
+EĞER ONAY = "Evet" ise:
+    DB.KaydetRandevu(KULLANICI_ID, DOKTOR_SECIM, TARIH, SAAT_SECIM)
+    MESAJ("Randevunuz başarıyla kaydedildi.")
+Aksi halde:
+    MESAJ("Randevu iptal edildi.")
+    SONLANDIR
+
+
+SMS Gönderme
+
+TELEFON_NO ← DB.GetKullaniciTelefon(KULLANICI_ID)
+MESAJ_ICERIK ← "Sayın " + KULLANICI_ADI + ", randevunuz onaylandı: " +
+                POLIKLINIK_SECIM + ", " + DOKTOR_SECIM + ", " + TARIH + " " + SAAT_SECIM
+SMS_GONDER(TELEFON_NO, MESAJ_ICERIK)
+MESAJ("Onay SMS'i gönderildi.")
+
+
+Sistem Sonlandırma
+
+MESAJ("Randevu işlemi tamamlandı. İyi günler dileriz.")
+SON
+
+
+Bu algoritma, gerçek bir sistemde dikkate alınması gereken tüm adımları içeriyor:
+
+Kimlik doğrulama ile güvenlik
+
+Poliklinik ve doktor seçimi
+
+Boş saat kontrolü
+
+Kullanıcı onayı
+
+Randevu kaydı
+
+SMS ile bilgilendirme
+
+İstersen bunu ben sana dot dilinde bir görsel akış diyagramı hâline de getirebilirim, adım adım her durumu gösteren bir flowchart gibi olur.
+
+Bunu yapalım mı?
+
+Şunu dedin:
+şimdi de bunu final bir pseudocode haline getirelim. ayrıca graphviz de akış şemasına çevrilebilecek düzenli bir dot kodu haline de getirelim.
+ChatGPT:
+
+Tamam kanka, önce final ve temiz bir pseudocode versiyonu çıkaralım. Ardından bunu Graphviz için uygun bir DOT kodu hâline getireceğim. Her ikisi de adım adım, eksiksiz ve net olacak.
+
+Final Pseudocode: HASTANE_RANDEVU_SISTEMI
+ALGORITMA HASTANE_RANDEVU_SISTEMI
+
+1. KULLANICI_KIMLIK_DOGRULAMA
+    KULLANICI_ID ← Kullanıcıdan al
+    SIFRE ← Kullanıcıdan al
+    EĞER !DB.KimlikDogrula(KULLANICI_ID, SIFRE) ise
+        MESAJ("Kimlik doğrulama başarısız. Lütfen tekrar deneyin.")
+        SONLANDIR
+    SON
+    MESAJ("Kimlik doğrulama başarılı.")
+
+2. POLIKLINIK_SECIM
+    POLIKLINIK_LISTESI ← DB.GetPoliklinikListesi()
+    MESAJ("Polikliniğinizi seçin:")
+    POLIKLINIK_SECIM ← Kullanıcıdan al
+    EĞER POLIKLINIK_SECIM geçerli değilse
+        MESAJ("Geçersiz poliklinik seçimi.")
+        TEKRAR POLIKLINIK_SECIM
+    SON
+
+3. DOKTOR_SECIM
+    DOKTOR_LISTESI ← DB.GetDoktorlar(POLIKLINIK_SECIM)
+    MESAJ("Doktor seçin:")
+    DOKTOR_SECIM ← Kullanıcıdan al
+    EĞER DOKTOR_SECIM geçerli değilse
+        MESAJ("Geçersiz doktor seçimi.")
+        TEKRAR DOKTOR_SECIM
+    SON
+
+4. UYGUN_SAAT_SECIM
+    UYGUN_SAATLER ← DB.GetBosSaatler(DOKTOR_SECIM, TARIH)
+    EĞER UYGUN_SAATLER boş ise
+        MESAJ("Seçilen tarihte uygun randevu yok.")
+        TEKRAR TARIH
+    SON
+    MESAJ("Uygun saatler:")
+    SAAT_SECIM ← Kullanıcıdan al
+    EĞER SAAT_SECIM geçerli değilse
+        MESAJ("Geçersiz saat seçimi.")
+        TEKRAR SAAT_SECIM
+    SON
+
+5. RANDEVU_ONAY
+    MESAJ("Randevunuz: " + POLIKLINIK_SECIM + ", " + DOKTOR_SECIM + ", " + TARIH + " " + SAAT_SECIM)
+    ONAY ← Kullanıcıdan al (Evet/Hayır)
+    EĞER ONAY = "Evet" ise
+        DB.KaydetRandevu(KULLANICI_ID, DOKTOR_SECIM, TARIH, SAAT_SECIM)
+        MESAJ("Randevunuz kaydedildi.")
+    Aksi halde
+        MESAJ("Randevu iptal edildi.")
+        SONLANDIR
+    SON
+
+6. SMS_BILGILENDIRME
+    TELEFON_NO ← DB.GetKullaniciTelefon(KULLANICI_ID)
+    MESAJ_ICERIK ← "Sayın " + KULLANICI_ADI + ", randevunuz onaylandı: " + POLIKLINIK_SECIM + ", " + DOKTOR_SECIM + ", " + TARIH + " " + SAAT_SECIM
+    SMS_GONDER(TELEFON_NO, MESAJ_ICERIK)
+    MESAJ("Onay SMS'i gönderildi.")
+
+7. SISTEM_SONUCLANDIR
+    MESAJ("Randevu işlemi tamamlandı. İyi günler.")
+    SON
+
+Graphviz DOT Kodu (Akış Diyagramı için)
+digraph HastaneRandevu {
+    rankdir=TB;
+    node [shape=box, style=rounded, fontname="Arial"];
+
+    Start [label="Başla"];
+    Kimlik [label="Kullanıcı Kimlik Doğrulama"];
+    KimlikFail [label="Kimlik doğrulama başarısız\nSistem sonlandır"];
+    Poliklinik [label="Poliklinik seçimi"];
+    PoliklinikFail [label="Geçersiz poliklinik seçimi\nTekrar poliklinik seçimi"];
+    Doktor [label="Doktor seçimi"];
+    DoktorFail [label="Geçersiz doktor seçimi\nTekrar doktor seçimi"];
+    TarihSaat [label="Uygun tarih ve saat seçimi"];
+    BosSaat [label="Seçilen tarihte uygun randevu yok\nTekrar tarih seçimi"];
+    SaatFail [label="Geçersiz saat seçimi\nTekrar saat seçimi"];
+    Onay [label="Randevu onayı"];
+    OnayHayir [label="Randevu iptal edildi\nSistem sonlandır"];
+    Kaydet [label="Randevu kaydet"];
+    SMS [label="SMS gönder"];
+    Bitis [label="Randevu işlemi tamamlandı\nSistem sonlandır"];
+
+    Start -> Kimlik;
+    Kimlik -> KimlikFail [label="Hatalı"];
+    Kimlik -> Poliklinik [label="Başarılı"];
+    
+    Poliklinik -> PoliklinikFail [label="Geçersiz"];
+    PoliklinikFail -> Poliklinik;
+    Poliklinik -> Doktor;
+
+    Doktor -> DoktorFail [label="Geçersiz"];
+    DoktorFail -> Doktor;
+    Doktor -> TarihSaat;
+
+    TarihSaat -> BosSaat [label="Uygun saat yok"];
+    BosSaat -> TarihSaat;
+    TarihSaat -> SaatFail [label="Geçersiz saat"];
+    SaatFail -> TarihSaat;
+    TarihSaat -> Onay;
+
+    Onay -> OnayHayir [label="Hayır"];
+    Onay -> Kaydet [label="Evet"];
+    Kaydet -> SMS;
+    SMS -> Bitis;
+    KimlikFail -> Bitis;
+    OnayHayir -> Bitis;
+}
+
+
+Bu DOT kodunu Graphviz’e verip renderlarsan, sistemin tam akış diyagramını görebilirsin. Her adım, hata ve tekrar seçenekleri dahil, eksiksiz bir şekilde gösterilmiş oldu.
+
+İstersen ben bunu sana renkli ve okunması daha kolay bir versiyon hâline de getirebilirim; örneğin hata yolları kırmızı, onay yolları yeşil gibi.
+
+Bunu da yapayım mı?
+
+Şunu dedin:
+teşekkür ederim şimdi de bu sistemin açıklamasını net ve hiçbir adımı atlamayacak şekilde 5 6 satırlık açıklamasını yapalım.
+ChatGPT:
+
+Tamam kanka, işte hastane randevu sisteminin hiçbir adımı atlamadan, net ve kısa bir şekilde açıklaması:
+
+Bu sistem, kullanıcıların güvenli bir şekilde randevu almasını sağlar. Öncelikle kimlik doğrulama ile kullanıcı bilgileri kontrol edilir; hatalı girişlerde sistem sonlanır. Doğru giriş sonrası kullanıcı, poliklinik ve doktor seçimini yapar; geçersiz seçimler tekrar sorulur. Seçilen doktor ve tarihe göre uygun saatler gösterilir, kullanıcı uygun saat seçimi yapar ve randevu onaylar. Onaylanan randevu veritabanına kaydedilir ve kullanıcıya SMS ile bilgilendirme yapılır. Sistem, randevu kaydı ve bilgilendirme tamamlandıktan sonra güvenli şekilde sonlandırılır.
+
+İstersen bunu biraz daha akıcı ve kullanıcı odaklı bir şekilde de 4-5 cümleye indirebilirim; hem akademik hem de anlaşılır olur. Bunu da yapayım mı?

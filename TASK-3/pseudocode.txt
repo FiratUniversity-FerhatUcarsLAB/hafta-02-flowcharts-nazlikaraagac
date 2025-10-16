@@ -1,0 +1,62 @@
+ALGORITMA HASTANE_RANDEVU_SISTEMI
+
+1. KULLANICI_KIMLIK_DOGRULAMA
+    KULLANICI_ID ← Kullanıcıdan al
+    SIFRE ← Kullanıcıdan al
+    EĞER !DB.KimlikDogrula(KULLANICI_ID, SIFRE) ise
+        MESAJ("Kimlik doğrulama başarısız. Lütfen tekrar deneyin.")
+        SONLANDIR
+    SON
+    MESAJ("Kimlik doğrulama başarılı.")
+
+2. POLIKLINIK_SECIM
+    POLIKLINIK_LISTESI ← DB.GetPoliklinikListesi()
+    MESAJ("Polikliniğinizi seçin:")
+    POLIKLINIK_SECIM ← Kullanıcıdan al
+    EĞER POLIKLINIK_SECIM geçerli değilse
+        MESAJ("Geçersiz poliklinik seçimi.")
+        TEKRAR POLIKLINIK_SECIM
+    SON
+
+3. DOKTOR_SECIM
+    DOKTOR_LISTESI ← DB.GetDoktorlar(POLIKLINIK_SECIM)
+    MESAJ("Doktor seçin:")
+    DOKTOR_SECIM ← Kullanıcıdan al
+    EĞER DOKTOR_SECIM geçerli değilse
+        MESAJ("Geçersiz doktor seçimi.")
+        TEKRAR DOKTOR_SECIM
+    SON
+
+4. UYGUN_SAAT_SECIM
+    UYGUN_SAATLER ← DB.GetBosSaatler(DOKTOR_SECIM, TARIH)
+    EĞER UYGUN_SAATLER boş ise
+        MESAJ("Seçilen tarihte uygun randevu yok.")
+        TEKRAR TARIH
+    SON
+    MESAJ("Uygun saatler:")
+    SAAT_SECIM ← Kullanıcıdan al
+    EĞER SAAT_SECIM geçerli değilse
+        MESAJ("Geçersiz saat seçimi.")
+        TEKRAR SAAT_SECIM
+    SON
+
+5. RANDEVU_ONAY
+    MESAJ("Randevunuz: " + POLIKLINIK_SECIM + ", " + DOKTOR_SECIM + ", " + TARIH + " " + SAAT_SECIM)
+    ONAY ← Kullanıcıdan al (Evet/Hayır)
+    EĞER ONAY = "Evet" ise
+        DB.KaydetRandevu(KULLANICI_ID, DOKTOR_SECIM, TARIH, SAAT_SECIM)
+        MESAJ("Randevunuz kaydedildi.")
+    Aksi halde
+        MESAJ("Randevu iptal edildi.")
+        SONLANDIR
+    SON
+
+6. SMS_BILGILENDIRME
+    TELEFON_NO ← DB.GetKullaniciTelefon(KULLANICI_ID)
+    MESAJ_ICERIK ← "Sayın " + KULLANICI_ADI + ", randevunuz onaylandı: " + POLIKLINIK_SECIM + ", " + DOKTOR_SECIM + ", " + TARIH + " " + SAAT_SECIM
+    SMS_GONDER(TELEFON_NO, MESAJ_ICERIK)
+    MESAJ("Onay SMS'i gönderildi.")
+
+7. SISTEM_SONUCLANDIR
+    MESAJ("Randevu işlemi tamamlandı. İyi günler.")
+    SON
