@@ -3,4 +3,4 @@
 
 sistemin kısa açıklaması (maks. 5-6 satır)
 
-Üniversite ders kayıt sistemi, öğrencilerin derslerini güvenli ve doğru bir şekilde seçip kaydetmesini sağlar. Öğrenci sisteme giriş yapar, açılmış dersleri görüntüler ve almak istediklerini seçer. Sistem, ön koşul, kontenjan, zaman çakışması, kredi limiti ve danışman onayı kontrollerini otomatik olarak yapar. Hata varsa öğrenci bilgilendirilir, yoksa dersler kaydedilir ve işlem onaylanır.
+Üniversite ders kayıt sistemi, öğrencinin giriş yapmasıyla başlar ve kayıt yapılabilecek dersleri listeler. Öğrenci dersleri seçer ve sistem, seçilen dersler için ön koşul, kontenjan, zaman çakışması, kredi limiti ve danışman onayı kontrollerini yapar. Eğer tüm kontroller geçerse dersler kaydedilir; herhangi bir hata varsa öğrenci bilgilendirilir ve düzeltme yapması istenir. Sistem, hatasız kayıt gerçekleştiğinde başarı mesajı göstererek tamamlanır.
