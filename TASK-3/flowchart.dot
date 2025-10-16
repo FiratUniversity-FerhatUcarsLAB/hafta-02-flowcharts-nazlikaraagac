@@ -1,0 +1,51 @@
+digraph HastaneRandevu {
+    rankdir=TB;
+    node [fontname="Arial", style=filled, fontcolor=white];
+
+    // Başlangıç ve Bitiş
+    Start [shape=oval, label="Başla", fillcolor=purple];
+    End [shape=oval, label="Sistem Sonlandır\n(Randevu tamamlandı veya iptal)", fillcolor=purple];
+
+    // İşlem adımları
+    KimlikIslem [shape=rectangle, label="Kullanıcı Kimlik Doğrulama", fillcolor=blue];
+    PoliklinikIslem [shape=rectangle, label="Poliklinik Seçimi", fillcolor=blue];
+    DoktorIslem [shape=rectangle, label="Doktor Seçimi", fillcolor=blue];
+    SaatIslem [shape=rectangle, label="Uygun Tarih ve Saat Seçimi", fillcolor=blue];
+    RandevuKaydet [shape=rectangle, label="Randevu Kaydet", fillcolor=blue];
+    SMSGonder [shape=rectangle, label="SMS Gönder", fillcolor=blue];
+
+    // Karar adımları
+    KimlikKarar [shape=diamond, label="Kimlik doğrulandı mı?", fillcolor=orange];
+    PoliklinikKarar [shape=diamond, label="Poliklinik geçerli mi?", fillcolor=orange];
+    DoktorKarar [shape=diamond, label="Doktor geçerli mi?", fillcolor=orange];
+    SaatKarar [shape=diamond, label="Saat geçerli mi?", fillcolor=orange];
+    BosSaatKarar [shape=diamond, label="Boş saat var mı?", fillcolor=orange];
+    OnayKarar [shape=diamond, label="Randevu onaylandı mı?", fillcolor=orange];
+
+    // Akış
+    Start -> KimlikIslem;
+    KimlikIslem -> KimlikKarar;
+    KimlikKarar -> End [label="Hayır", color=red, fontcolor=red];
+    KimlikKarar -> PoliklinikIslem [label="Evet", color=green, fontcolor=green];
+
+    PoliklinikIslem -> PoliklinikKarar;
+    PoliklinikKarar -> PoliklinikIslem [label="Hayır", color=red, fontcolor=red];
+    PoliklinikKarar -> DoktorIslem [label="Evet", color=green, fontcolor=green];
+
+    DoktorIslem -> DoktorKarar;
+    DoktorKarar -> DoktorIslem [label="Hayır", color=red, fontcolor=red];
+    DoktorKarar -> SaatIslem [label="Evet", color=green, fontcolor=green];
+
+    SaatIslem -> BosSaatKarar;
+    BosSaatKarar -> SaatIslem [label="Hayır", color=red, fontcolor=red];
+    BosSaatKarar -> SaatKarar [label="Evet", color=green, fontcolor=green];
+
+    SaatKarar -> SaatIslem [label="Hayır", color=red, fontcolor=red];
+    SaatKarar -> OnayKarar [label="Evet", color=green, fontcolor=green];
+
+    OnayKarar -> RandevuKaydet [label="Evet", color=green, fontcolor=green];
+    OnayKarar -> End [label="Hayır", color=red, fontcolor=red];
+
+    RandevuKaydet -> SMSGonder [color=green];
+    SMSGonder -> End [color=green];
+}
